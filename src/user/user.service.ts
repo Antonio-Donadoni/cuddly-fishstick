@@ -37,12 +37,20 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel
+      .findByIdAndUpdate(id, { $set: updateUserDto }, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new HttpException('Utente non trovato', 404);
+    }
+
+    return user;
   }
 
-  remove(id: string) {
-    const user = this.userModel.findByIdAndDelete(id).exec();
+  async remove(id: string) {
+    const user = await this.userModel.findByIdAndDelete(id).exec();
 
     if (!user) {
       throw new HttpException('Utente non trovato', 404);
