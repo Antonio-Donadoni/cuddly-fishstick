@@ -78,12 +78,14 @@ export class AppointmentService {
 
     const userId = decoded['id'];
     const ruolo = decoded['ruolo'];
-    console.log('ruolo', ruolo);
-    console.log('USERID', userId);
 
     if (ruolo === 'admin') {
       console.log('ADMIN');
-      return this.appointmentModel.find().exec();
+      // return appointments for all users left join user
+      return this.appointmentModel
+        .find()
+        .populate('user', 'email nome cognome')
+        .exec();
     } else {
       return this.appointmentModel.find({ user: userId }).exec();
     }
@@ -128,7 +130,14 @@ export class AppointmentService {
       throw new HttpException('Appuntamento non trovato', 404);
     }
 
-    return appointment;
+    // get appointment with updated data and populate user
+
+    const appointmentWithUser = await this.appointmentModel
+      .findById(appointment._id)
+      .populate('user', 'email nome cognome')
+      .exec();
+
+    return appointmentWithUser;
   }
 
   async remove(id: string) {

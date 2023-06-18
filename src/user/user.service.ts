@@ -41,7 +41,17 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(id: string) {
+    const user = this.userModel.findByIdAndDelete(id).exec();
+
+    if (!user) {
+      throw new HttpException('Utente non trovato', 404);
+    }
+
+    // delete also all appointments of this user
+
+    const appointments = this.userModel.deleteMany({ user: id }).exec();
+
+    return user;
   }
 }
