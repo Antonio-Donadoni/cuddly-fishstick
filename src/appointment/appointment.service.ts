@@ -52,7 +52,14 @@ export class AppointmentService {
       user: user._id,
     });
 
-    return appointment.save();
+    const savedAppointment = await appointment.save();
+
+    // get savedAppointment with user populated and return it
+
+    return this.appointmentModel
+      .findById(savedAppointment._id)
+      .populate('user', 'email nome cognome')
+      .exec();
   }
 
   findAll(req: any): Promise<Appointment[]> {
@@ -80,7 +87,6 @@ export class AppointmentService {
     const ruolo = decoded['ruolo'];
 
     if (ruolo === 'admin') {
-      console.log('ADMIN');
       // return appointments for all users left join user
       return this.appointmentModel
         .find()

@@ -47,7 +47,6 @@ export class AuthService {
 
     const token = authHeader.split(' ')[1];
 
-    console.log('TOKEN', token);
 
     if (!token) {
       throw new HttpException('Token mancante', 401);
@@ -55,7 +54,7 @@ export class AuthService {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log('DECODED', decoded);
+  
     if (!decoded) {
       throw new HttpException('Token non valido', 401);
     }
